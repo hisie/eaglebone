@@ -1,0 +1,1 @@
+cvlc -vvv /home/debian/ouput.vid --demux=rawvideo --rawvid-fps=10 --rawvid-width=320 --rawvid-height=240  --rawvid-chroma=RV24 --sout "#transcode{vcodec=mp4v,vb=1024}:std{access=udp,mux=ts,dst=192.168.1.33:2121}"

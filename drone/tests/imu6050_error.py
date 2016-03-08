@@ -10,10 +10,10 @@ import datetime
 import logging
 import time
 
-from flight.stabilization.imu6050 import Imu6050 as Sensor
+from sensors.imu6050dmp import Imu6050Dmp as Sensor
 
 
-logging.basicConfig(filename="imu3000-error_test_{0}.log".format(datetime.datetime.now().strftime("%Y%m%d_%H%M%S")), \
+logging.basicConfig(filename="imu6050-error_test_{0}.log".format(datetime.datetime.now().strftime("%Y%m%d_%H%M%S")), \
                     format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s', datefmt='%d/%m/%y %H:%M:%S', \
                     level=logging.ERROR)
 

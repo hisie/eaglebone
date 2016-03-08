@@ -158,6 +158,8 @@ class Vector(object):
     def rotateVector3D(vector, angles):
         '''
         Rotates a 3D-vector
+        @param vector: 3D vector as [x,y,z]
+        @param angles: Rotation angles as radians within 3-dimensions [pitch, roll, yaw]
         '''
         
         cosx = cos(angles[0])
@@ -173,8 +175,11 @@ class Vector(object):
         rotationMatrixY = [[cosy, 0.0, siny],[0.0, 1.0, 0.0],[-siny, 0.0, cosy]]
         rotationMatrixZ = [[cosz, -sinz , 0.0],[sinz, cosz, 0.0],[0.0, 0.0, 1.0]]
         
+        #Rotate on X-axis
         vector = Vector._applyRotation(rotationMatrixX, vector)
+        #Rotate on Y-axis
         vector = Vector._applyRotation(rotationMatrixY, vector)
+        #Rotate on Z-axis
         vector = Vector._applyRotation(rotationMatrixZ, vector)
         
         return vector

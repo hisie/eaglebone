@@ -254,7 +254,7 @@ class Imu6050(I2CSensor):
         self.calibrate()
     
 
-    def calibrate(self, recalibrateAnglesOffset=False):
+    def calibrate(self):
         '''
         Calibrates sensor
         '''

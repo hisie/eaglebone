@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cpufreq-set -g performance
+
 echo cape-universaln > /sys/devices/bone_capemgr.*/slots
 config-pin P8.19 pwm
 config-pin P8.13 pwm

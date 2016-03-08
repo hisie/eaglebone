@@ -13,12 +13,13 @@ import time
 from config import Configuration
 from emulation.sensor import EmulatedSensor
 from flight.driving.driver import Driver
-from flight.stabilization.imu6050 import Imu6050
 from flight.stabilization.pid import PID
 from flight.stabilization.sensor import Sensor
+from flight.stabilization.imu6050 import Imu6050
 from flight.state import State
 from sensors.IMU_dummy import IMUDummy
 from sensors.imu3000_emu import Imu3000Emulated
+from sensors.imu6050dmp import Imu6050Dmp
 
 
 class FlightController(object):
@@ -91,7 +92,7 @@ class FlightController(object):
             
         elif imuClass == Configuration.VALUE_IMU_CLASS_6050:
             
-            self._sensor = Imu6050()
+            self._sensor = Imu6050Dmp()
             
         elif imuClass == Configuration.VALUE_IMU_CLASS_EMULATION:
             

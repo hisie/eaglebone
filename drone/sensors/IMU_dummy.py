@@ -79,9 +79,15 @@ class IMUDummy(object):
         print text
         logging.info(text)
     
-    def calibrate(self, recalibrateAnglesOffset=False):
+    def calibrate(self):
         pass
     
+
+    def getMaxErrorZ(self):
+
+        return 0.0
+
+
     def stop(self):
         pass
     

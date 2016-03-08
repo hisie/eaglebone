@@ -315,7 +315,7 @@ class Sensor(object):
         self.calibrate()
     
     
-    def calibrate(self, recalibrateAnglesOffset=False):
+    def calibrate(self):
         '''
         Calibrates sensor
         '''

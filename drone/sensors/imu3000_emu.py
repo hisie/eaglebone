@@ -224,43 +224,9 @@ class Imu3000Emulated(object):
         self._accLastFilteredRawData = [self._readRawAccelX(), self._readRawAccelY(), self._readRawAccelZ()]
         
         self.calibrate()
-       
-    """
-    def _readCalibrationFile(self):
-
-        read = False
-        
-        if path.exists(Imu3000Emulated.CALIBRATION_FILE_PATH):
-            
-            with open(Imu3000Emulated.CALIBRATION_FILE_PATH, "r") as calibrationFile:
-                serializedCalibration = calibrationFile.readline()
-                calibrationFile.close()
-
-            calibration = json.loads(serializedCalibration)            
-            self._accAnglesOffset = calibration["accAnglesOffset"]
-            print "Calibration read from file."
-            
-            read = True
-            
-        return read 
-        
     
-    def _writeCalibrationFile(self):
-        '''    
-        Save calibration into a config file
-        '''
-        
-        calibration = {"accAnglesOffset" : self._accAnglesOffset}
 
-        serializedCalibration = json.dumps(calibration)
-        with open(Imu3000Emulated.CALIBRATION_FILE_PATH, "w+") as calibrationFile:
-            calibrationFile.write(serializedCalibration + "\n")
-            calibrationFile.close()
-
-        print "Calibration done. Configuration file (over)written."  
-    """    
-
-    def calibrate(self, recalibrateAnglesOffset=False):
+    def calibrate(self):
         '''
         Calibrates sensor
         '''
@@ -300,8 +266,6 @@ class Imu3000Emulated(object):
             self._gyroOffset[index] /= float(i) 
             
         
-        #if recalibrateAnglesOffset or not self._readCalibrationFile():
-       
         #Calculate sensor installation angles
         self._accAnglesOffset[0] = self._previousAngles[0] = math.degrees(math.atan2(self._accOffset[1], self._accOffset[2]))
         self._accAnglesOffset[1] = self._previousAngles[1] = -math.degrees(math.atan2(self._accOffset[0], self._accOffset[2]))

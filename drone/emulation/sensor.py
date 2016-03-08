@@ -85,7 +85,7 @@ class EmulatedSensor(object):
         logging.info(text)
         
     
-    def calibrate(self, recalibrateAnglesOffset=False):
+    def calibrate(self):
         pass
     
     def stop(self):

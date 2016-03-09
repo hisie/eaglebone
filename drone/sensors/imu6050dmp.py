@@ -7,6 +7,8 @@ Created on 04/03/2016
 
 import logging
 from math import degrees
+from threading import Thread, Lock
+from copy import deepcopy
 import time
 
 from sensors.pycomms.mpu6050 import MPU6050
@@ -32,7 +34,12 @@ class Imu6050Dmp(object):
         self._angles = [0.0]*3 #radians
         self._accels = [0.0]*3 #g
         
-        self._maxErrorAccelZ = 0.0
+        self._maxErrorAccelZ = 0.1
+        
+        self._packet = None
+        self._isRunning = False
+        self._packetReadingThread = Thread(target=self._doPacketReading)
+        self._packetLock = Lock()
         
 
     def readAngleSpeeds(self):
@@ -67,25 +74,32 @@ class Imu6050Dmp(object):
         pass
 
     def _readPacket(self):
+    
+        while self._imu.getIntStatus() < 2:
+            time.sleep(0.001)
 
         fifoCount = self._imu.getFIFOCount()
         
-        #Wait for data
-        while fifoCount < 64:
+        if fifoCount == 1024:
+            self._imu.resetFIFO()
+            fifoCount = 0
+        
+        while fifoCount < self._packetSize:
             fifoCount = self._imu.getFIFOCount()
         
-        fifo = []
-        fifo += self._imu.getFIFOBlock()
-        fifo += self._imu.getFIFOBlock()
-
-        self._imu.resetFIFO()	
-        
-        return fifo[:42]
+        with self._packetLock:
+            #self._packet = self._imu.getFIFOBytes(self._packetSize)
+            self._packet = self._imu.getFIFOBlock()
+            fifoCount = self._imu.getFIFOCount()
+            while fifoCount > 0:
+                self._packet += self._imu.getFIFOBlock()
+                fifoCount = self._imu.getFIFOCount()
     
 
     def refreshState(self):
         
-        packet = self._readPacket()
+        with self._packetLock:
+            packet = deepcopy(self._packet) #self._readPacket()
         
         q = self._imu.dmpGetQuaternion(packet)
         g = self._imu.dmpGetGravity(q)
@@ -113,41 +127,35 @@ class Imu6050Dmp(object):
 
         # Get expected DMP packet size for later comparison
         self._packetSize = self._imu.dmpGetFIFOPacketSize()
-
+        
+        self._isRunning = True
+        self._packetReadingThread.start()
+        
         self.calibrate()
 
     
     def calibrate(self):
         
         print "Calibrating..."
-        time.sleep(20)
+        time.sleep(20)        
         self._imu.resetFIFO()
         
-        packet = self._readPacket()
+        #Wait for next packet
+        time.sleep(0.05)
+        
+        with self._packetLock:
+            packet = deepcopy(self._packet) #self._readPacket()
         
         q = self._imu.dmpGetQuaternion(packet)
         g = self._imu.dmpGetGravity(q)
         
         ypr = self._imu.dmpGetYawPitchRoll(q, g)
         self._angleOffset = [ypr["pitch"], ypr["roll"], ypr["yaw"]]
-
+        
         accelRaw = self._imu.dmpGetAccel(packet)
         linearAccel = self._imu.dmpGetLinearAccel(accelRaw, g)
         self._gravityOffset = Vector.rotateVector3D(linearAccel, self._angleOffset)
-        
-        #Calculate Z-accel max error
-        self._maxErrorAccelZ = 0.0
-        
-        count = 0
-        while count < 50:
-            self.refreshState()
-            accelZ = self.readAccels()
-            if accelZ > self._maxErrorAccelZ:
-                self._maxErrorAccelZ = accelZ
-            
-            time.sleep(0.02)    
-            count += 1
-        
+
 
     def getMaxErrorZ(self):
 
@@ -156,5 +164,17 @@ class Imu6050Dmp(object):
 
     def stop(self):
         
+        self._isRunning = False
+        
+        if self._packetReadingThread.isAlive():
+            self._packetReadingThread.join()
+        
         self._imu.setDMPEnabled(False)
         self._imu.setSleepEnabled(True)
+        
+
+    def _doPacketReading(self):
+        
+        while self._isRunning:
+            self._readPacket()
+        

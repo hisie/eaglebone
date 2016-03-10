@@ -44,7 +44,7 @@ class PID(object):
         
         self._length = length
         
-        self._integralsEnabled = False
+        self._integralsEnabled = True
         
         self._deltaTimeSum = 0.0
         self._iterationCount = 0

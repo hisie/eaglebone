@@ -1602,7 +1602,7 @@ class MPU6050:
     def dmpGetYawPitchRoll(self, q, g):
         data = {
             # yaw: (about Z axis)
-            'yaw' : atan2(2.0*q['x']*q['y']-2.0*q['w']*q['z'], 2.0*q['w']*q['w']+2.0*q['x']*q['x']-1.0),
+            'yaw' : -atan2(2.0*q['x']*q['y']-2.0*q['w']*q['z'], 2.0*q['w']*q['w']+2.0*q['x']*q['x']-1.0),
             # roll: (nose up/down, about Y axis)
             'roll' : -atan(g['x'] / sqrt(g['y']*g['y']+g['z']*g['z'])),
             # pitch: (tilt left/right, about X axis)

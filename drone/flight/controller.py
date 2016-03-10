@@ -15,7 +15,6 @@ from emulation.sensor import EmulatedSensor
 from flight.driving.driver import Driver
 from flight.stabilization.pid import PID
 from flight.stabilization.sensor import Sensor
-from flight.stabilization.imu6050 import Imu6050
 from flight.state import State
 from sensors.IMU_dummy import IMUDummy
 from sensors.imu3000_emu import Imu3000Emulated
@@ -24,8 +23,7 @@ from sensors.imu6050dmp import Imu6050Dmp
 
 class FlightController(object):
     
-    #20160129 DPM - sleep function has upto millesecond precision
-    PID_PERIOD = 0.02  # seconds (~50Hz)
+    PID_PERIOD = 0.02  # seconds (50Hz)
     
     _instance = None
     

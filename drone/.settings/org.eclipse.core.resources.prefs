@@ -28,6 +28,7 @@ encoding//tests/imu3000_error.py=utf-8
 encoding//tests/imu6050.py=utf-8
 encoding//tests/imu6050_dmp.py=utf-8
 encoding//tests/imu6050_error.py=utf-8
+encoding//tests/inertial_test.py=utf-8
 encoding//tests/kalman.py=utf-8
 encoding//tests/raw_commander.py=utf-8
 encoding//tests/streaming.py=utf-8

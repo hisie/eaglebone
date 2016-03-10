@@ -102,14 +102,14 @@ class Dispatcher(StreamRequestHandler):
                 self._controller.stopPid()
                 self._controller.idle()                
 
-        elif message["key"] == "integrals":
-            
-            enable = message["data"]
-            
-            if enable:                
-                self._controller.enableIntegrals()
-            else:
-                self._controller.disableIntegrals()
+#         elif message["key"] == "integrals":
+#             
+#             enable = message["data"]
+#             
+#             if enable:                
+#                 self._controller.enableIntegrals()
+#             else:
+#                 self._controller.disableIntegrals()
                 
         elif message["key"] == "pid-calibration":
             

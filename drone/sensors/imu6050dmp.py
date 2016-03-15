@@ -33,6 +33,14 @@ class Imu6050Dmp(object):
         self._angleSpeeds = [0.0]*3 #degrees
         self._angles = [0.0]*3 #radians
         self._accels = [0.0]*3 #g
+
+        self._anglesStats = [{ "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
+                                  { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
+                                  { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }]
+
+        self._accelsStats = [{ "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
+                                  { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
+                                  { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }]
         
         self._maxErrorAccelZ = 0.1
         
@@ -40,7 +48,37 @@ class Imu6050Dmp(object):
         self._isRunning = False
         self._packetReadingThread = Thread(target=self._doPacketReading)
         self._packetLock = Lock()
+
         
+    @staticmethod
+    def _calculateStatistics(stats, values):
+
+        for index in range(len(stats)):
+            stats[index]["count"] += 1
+            stats[index]["sum"] += value
+
+            if value > stats[index]["max"]:
+                stats[index]["max"] = value
+
+            if value < stats[index]["min"]:
+                stats[index]["min"] = value
+
+
+    @staticmethod
+    def _statisticsToString(stats):
+
+        text = ""
+
+        for stat in stats:
+
+            average = 0.0
+            if stat["count"] != 0.0:
+                average = stat["sum"] / stat["count"]
+
+            text += "\tavg: {0}; max: {1}; min: {2}\n".format(average, stat["max"], stat["min"])
+
+        return text
+
 
     def readAngleSpeeds(self):
 
@@ -49,7 +87,11 @@ class Imu6050Dmp(object):
     
     def readAngles(self):
         
-        return [degrees(angle) for angle in self._angles]
+        angles = [degrees(angle) for angle in self._angles]
+
+        Imu6050Dmp._calculateStatistics(self._anglesStats, angles)
+
+        return angles
 
 
     def readDeviceAngles(self):
@@ -67,6 +109,8 @@ class Imu6050Dmp(object):
         for index in range(3):
             accels[index] = (self._accels[index] - self._gravityOffset[index]) * Imu6050Dmp.GRAVITY
         
+        Imu6050Dmp._calculateStatistics(self._accelsStats, accels)
+
         return accels
 
     
@@ -88,7 +132,6 @@ class Imu6050Dmp(object):
             fifoCount = self._imu.getFIFOCount()
         
         with self._packetLock:
-            #self._packet = self._imu.getFIFOBytes(self._packetSize)
             self._packet = self._imu.getFIFOBlock()
             fifoCount = self._imu.getFIFOCount()
             while fifoCount > 0:
@@ -99,7 +142,7 @@ class Imu6050Dmp(object):
     def refreshState(self):
         
         with self._packetLock:
-            packet = deepcopy(self._packet) #self._readPacket()
+            packet = deepcopy(self._packet)
         
         q = self._imu.dmpGetQuaternion(packet)
         g = self._imu.dmpGetGravity(q)
@@ -171,6 +214,12 @@ class Imu6050Dmp(object):
         
         self._imu.setDMPEnabled(False)
         self._imu.setSleepEnabled(True)
+
+        print "IMU stats:"
+        print "-angles"
+        print Imu6050Dmp._statisticsToString(self._anglesStats)
+        print "-accels"
+        print Imu6050Dmp._statisticsToString(self._accelsStats)
         
 
     def _doPacketReading(self):

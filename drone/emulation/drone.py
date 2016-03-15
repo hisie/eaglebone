@@ -25,10 +25,10 @@ class EmulatedDrone(object):
     REALISTIC_FLIGHT = True
     
     #TODO Create config
-    PROPELLER_THRUST_RATE = 0.013 # 1.3kg @100%
+    PROPELLER_THRUST_RATE = 0.01 # 1.0kg @100%
     PROPELLER_COUNTER_ROTATION_RATE = 10.0    
-    WEIGHT = 2.0 # kg
-    MAX_CRASH_SPEED = -1.5 #m/s
+    WEIGHT = 1.8 # kg
+    MAX_CRASH_SPEED = -1.0 #m/s
     ARM_LENGTH = 0.23 #m
     
     _instance = None

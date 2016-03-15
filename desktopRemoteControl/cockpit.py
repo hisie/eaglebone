@@ -37,7 +37,7 @@ class Cockpit(ttkFrame):
     DIR_HORIZONTAL = 2
     
     MAX_ACCEL = 10.0 #TODO angles. Replace by m/s²
-    MAX_ACCEL_Z = 1.0 #m/s² steps of 0.1 m/s²
+    MAX_ACCEL_Z = 1.0 #m/s² steps of 0.01 m/s²
     MAX_ANGLE_SPEED = 50.0 #º/s
 
     def __init__(self, parent, isDummy = False, droneIp = DEFAULT_DRONE_IP, dronePort = DEFAULT_DRONE_PORT):
@@ -200,7 +200,7 @@ class Cockpit(ttkFrame):
         controlFrame.grid(column=0, row=1, sticky="W")
         
         self._throttle = DoubleVar()
-        self._thrustScale = Scale(controlFrame, orient=VERTICAL, from_=10.0, to=-10.0, \
+        self._thrustScale = Scale(controlFrame, orient=VERTICAL, from_=100.0, to=-100.0, \
                             tickinterval=0, variable=self._throttle, \
                             length=200, showvalue=1, \
                             state=DISABLED,
@@ -315,7 +315,7 @@ class Cockpit(ttkFrame):
         #Remote control uses clockwise angle, but the drone's referece system uses counter-clockwise angle
         self._target[2] = -self._yaw.get() * Cockpit.MAX_ANGLE_SPEED / 100.0
         
-        self._target[3] = self._throttle.get() * Cockpit.MAX_ACCEL_Z / 10.0
+        self._target[3] = self._throttle.get() * Cockpit.MAX_ACCEL_Z / 100.0
         
         self._sendTarget() 
     

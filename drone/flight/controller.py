@@ -314,9 +314,12 @@ class FlightController(object):
         state = State()
         
         state._throttles = self._driver.getThrottles()
-        state._angles = self._sensor.readDeviceAngles()
-        state._angles[2] = self._sensor.readAngleSpeeds()[2]
-        state._accels = self._sensor.readAccels()
+        state._angles = [0.0]*3
+        state._accels = [0.0]*3
+        #TODO: Removed due to sensor error measurement
+        #state._angles = self._sensor.readDeviceAngles()
+        #state._angles[2] = self._sensor.readAngleSpeeds()[2]
+        #state._accels = self._sensor.readAccels()
         
         return state
     

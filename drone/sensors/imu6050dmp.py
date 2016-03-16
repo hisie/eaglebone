@@ -55,13 +55,13 @@ class Imu6050Dmp(object):
 
         for index in range(len(stats)):
             stats[index]["count"] += 1
-            stats[index]["sum"] += value
+            stats[index]["sum"] += values[index]
 
-            if value > stats[index]["max"]:
-                stats[index]["max"] = value
+            if values[index] > stats[index]["max"]:
+                stats[index]["max"] = values[index]
 
-            if value < stats[index]["min"]:
-                stats[index]["min"] = value
+            if values[index] < stats[index]["min"]:
+                stats[index]["min"] = values[index]
 
 
     @staticmethod
@@ -89,7 +89,7 @@ class Imu6050Dmp(object):
         
         angles = [degrees(angle) for angle in self._angles]
 
-        Imu6050Dmp._calculateStatistics(self._anglesStats, angles)
+        #Imu6050Dmp._calculateStatistics(self._anglesStats, angles)
 
         return angles
 
@@ -100,8 +100,11 @@ class Imu6050Dmp(object):
         for index in range(3):
             deviceAngles[index] = self._angles[index] - self._angleOffset[index]
 
-        return [degrees(angle) for angle in deviceAngles]
+        angles = [degrees(angle) for angle in deviceAngles]
 
+        Imu6050Dmp._calculateStatistics(self._anglesStats, angles)   
+
+        return angles
     
     def readAccels(self):
         

@@ -41,6 +41,11 @@ class Imu6050Dmp(object):
         self._accelsStats = [{ "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
                                   { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
                                   { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }]
+
+        self._angSpeedsStats = [{ "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
+                                  { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
+                                  { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }]
+
         
         self._maxErrorAccelZ = 0.1
         
@@ -82,6 +87,8 @@ class Imu6050Dmp(object):
 
     def readAngleSpeeds(self):
 
+        Imu6050Dmp._calculateStatistics(self._angSpeedsStats, self._angleSpeeds)
+
         return self._angleSpeeds
 
     
@@ -100,7 +107,7 @@ class Imu6050Dmp(object):
         for index in range(3):
             deviceAngles[index] = self._angles[index] - self._angleOffset[index]
 
-        angles = [degrees(angle) for angle in deviceAngles]
+        angles = [round(degrees(angle)) for angle in deviceAngles]
 
         Imu6050Dmp._calculateStatistics(self._anglesStats, angles)   
 
@@ -219,6 +226,8 @@ class Imu6050Dmp(object):
         self._imu.setSleepEnabled(True)
 
         print "IMU stats:"
+        print "-angle speeds"
+        print Imu6050Dmp._statisticsToString(self._angSpeedsStats)
         print "-angles"
         print Imu6050Dmp._statisticsToString(self._anglesStats)
         print "-accels"

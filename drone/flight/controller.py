@@ -237,7 +237,7 @@ class FlightController(object):
             
             time.sleep(FlightController.PID_PERIOD)            
             self._sensor.refreshState()
-            Thread(target=self._doFlightDetection).start()
+            #Thread(target=self._doFlightDetection).start()
 
             self._pid.start()
             

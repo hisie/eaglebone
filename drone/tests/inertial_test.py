@@ -10,16 +10,17 @@ import time
 
 from emulation.state import State
 from emulation.ui.graphic import Display
+from copy import deepcopy
 
 
 class StateProvider(object):
     
-    def __init__(self):
+    def __init__(self, address="192.168.1.130"):
         
         self._state = State()
         self._state._coords = [0.0, 0.0, 1.0]
         
-        self._connection = rpyc.classic.connect("192.168.1.130")
+        self._connection = rpyc.classic.connect(address)
         
         self._imu = self._connection.modules["sensors.imu6050dmp"].Imu6050Dmp()
         self._imu.start()
@@ -29,14 +30,24 @@ class StateProvider(object):
         
         self._imu.refreshState()
         
-        #self._state._time = time.time()
+        currentTime = time.time()
+        if self._state._time != None:
+
+            dt2 = (currentTime - self._state._time)/2.0
         
-        #self._state._crashed = False
-        #self._state._coords = [0.0]*3
-        self._state._accels = self._imu.readAccels()
-        #self._state._speeds = [0.0]*3        
-        self._state._angleSpeeds = self._imu.readAngleSpeeds()
-        self._state._angles = self._imu.readDeviceAngles()
+            #self._state._crashed = False
+            
+            previousAccels = self._state._accels
+            previousSpeeds = deepcopy(self._state._speeds)
+            self._state._accels = self._imu.readAccels()
+            for index in range(3):
+                self._state._speeds[index] += (self._state._accels[index] + previousAccels[index])*dt2
+                self._state._coords[index] += (self._state._speeds[index] + previousSpeeds[index])*dt2
+
+            self._state._angleSpeeds = self._imu.readAngleSpeeds()
+            self._state._angles = self._imu.readDeviceAngles()
+
+        self._state._time = currentTime
         
         return self._state
     

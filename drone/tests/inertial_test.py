@@ -15,6 +15,8 @@ from copy import deepcopy
 
 class StateProvider(object):
     
+    ACCEL_LPF = 0.001
+    
     def __init__(self, address="192.168.1.130"):
         
         self._state = State()
@@ -37,10 +39,14 @@ class StateProvider(object):
         
             #self._state._crashed = False
             
-            previousAccels = self._state._accels
+            previousAccels = deepcopy(self._state._accels)
             previousSpeeds = deepcopy(self._state._speeds)
-            self._state._accels = self._imu.readAccels()
+            
+            rawAccels = self._imu.readAccels()
             for index in range(3):
+                self._state._accels[index] = previousAccels[index] + \
+                    StateProvider.ACCEL_LPF * (rawAccels[index] - previousAccels[index])
+                    
                 self._state._speeds[index] += (self._state._accels[index] + previousAccels[index])*dt2
                 self._state._coords[index] += (self._state._speeds[index] + previousSpeeds[index])*dt2
 

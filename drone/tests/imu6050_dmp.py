@@ -29,6 +29,8 @@ lasttime = time.time()
 
 try:
     sensor.resetGyroReadTime()
+    sensor.refreshState()
+    time.sleep(0.1)
     while True:
     
         sensor.refreshState()

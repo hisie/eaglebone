@@ -17,8 +17,8 @@ class EmulatedSensor(object):
     IMU sensor of the emulated drone
     '''
     
-    ERROR_ANGLE_SPEED_DISTRIBUTION = [-0.05, 0.05] #[-0.1, 0.15]
-    ERROR_ANGLE_DISTRIBUTION = [-0.1, 0.1] #[-0.08, 0.1]
+    ERROR_ANGLE_SPEED_DISTRIBUTION = [-0.0, 0.0] #[-0.1, 0.15]
+    ERROR_ANGLE_DISTRIBUTION = [-0.0, 0.0] #[-0.08, 0.1]
     ERROR_ACCEL_DISTRIBUTION = [-0.1, 0.1] #[-0.1, 0.15]
 
     def __init__(self):

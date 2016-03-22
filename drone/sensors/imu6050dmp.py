@@ -33,6 +33,8 @@ class Imu6050Dmp(object):
         self._angleSpeeds = [0.0]*3 #degrees
         self._angles = [0.0]*3 #radians
         self._accels = [0.0]*3 #g
+        
+        self._readTime = time.time()
 
         self._anglesStats = [{ "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
                                   { "count": 0, "sum": 0.0,  "max": 0.0, "min": 0.0 }, \
@@ -87,9 +89,11 @@ class Imu6050Dmp(object):
 
     def readAngleSpeeds(self):
 
-        Imu6050Dmp._calculateStatistics(self._angSpeedsStats, self._angleSpeeds)
+        angleSpeeds = [round(degrees(angleSpeed)) for angleSpeed in self._angleSpeeds]
 
-        return self._angleSpeeds
+        Imu6050Dmp._calculateStatistics(self._angSpeedsStats, angleSpeeds)
+
+        return angleSpeeds
 
     
     def readAngles(self):
@@ -124,8 +128,10 @@ class Imu6050Dmp(object):
         return accels
 
     
-    def resetGyroReadTime(self):        
-        pass
+    def resetGyroReadTime(self):
+            
+        self._readTime = time.time()
+        
 
     def _readPacket(self):
     
@@ -157,10 +163,16 @@ class Imu6050Dmp(object):
         q = self._imu.dmpGetQuaternion(packet)
         g = self._imu.dmpGetGravity(q)
         
-        self._angleSpeeds = self._imu.dmpGetGyro(packet)
-        
         ypr = self._imu.dmpGetYawPitchRoll(q, g)
+        previousAngles = self._angles
         self._angles = [ypr["pitch"], ypr["roll"], ypr["yaw"]]
+        
+        previousTime = self._readTime
+        self._readTime = time.time()
+        dt = self._readTime - previousTime        
+        
+        for index in range(3):
+            self._angleSpeeds[index] = (self._angles[index] - previousAngles[index]) / dt #self._imu.dmpGetGyro(packet)
 
         accelRaw = self._imu.dmpGetAccel(packet)
         linearAccel = self._imu.dmpGetLinearAccel(accelRaw, g)        

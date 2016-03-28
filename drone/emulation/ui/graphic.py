@@ -42,6 +42,8 @@ class Display(ttkFrame):
         '''
         ttkFrame.__init__(self, parent)
         
+        self._refreshTime = Display.REFRESH_PERIOD
+        
         self._stateProvider = None
         self._launcherMethod = None
         
@@ -65,6 +67,13 @@ class Display(ttkFrame):
         
         return self
        
+    
+    def setRefreshTime(self, refreshTime):
+        
+        self._refreshTime = refreshTime
+        
+        return self
+    
     
     def start(self):
         
@@ -175,10 +184,17 @@ class Display(ttkFrame):
         if self._isRunning:
         
             state = self._stateProvider.getState()
-            angles = [radians(angle) for angle in state._angles]
-            self._plotXY(state._coords, angles)
-            self._plotXZ(state._coords, angles)
-            self._plotYZ(state._coords, angles)
+            if not state._crashed:
+                angles = [radians(angle) for angle in state._angles]
+                self._plotXY(state._coords, angles)
+                self._plotXZ(state._coords, angles)
+                self._plotYZ(state._coords, angles)
+                
+            else:
+                self._canvasXY.create_text((200,100), text="CRASHED!", fill="#ff0000")
+                self._canvasXZ.create_text((100,100), text="CRASHED!", fill="#ff0000")
+                self._canvasYZ.create_text((100,100), text="CRASHED!", fill="#ff0000")
+            
             self.update_idletasks()
             
-            self.after(int(Display.REFRESH_PERIOD * 1000.0), self._refresh)
+            self.after(int(self._refreshTime * 1000.0), self._refresh)

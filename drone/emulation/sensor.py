@@ -17,9 +17,9 @@ class EmulatedSensor(object):
     IMU sensor of the emulated drone
     '''
     
-    ERROR_ANGLE_SPEED_DISTRIBUTION = [-0.0, 0.0] #[-0.1, 0.15]
+    ERROR_ANGLE_SPEED_DISTRIBUTION = [-1.0, 1.0] #[-0.1, 0.15]
     ERROR_ANGLE_DISTRIBUTION = [-0.0, 0.0] #[-0.08, 0.1]
-    ERROR_ACCEL_DISTRIBUTION = [-0.1, 0.1] #[-0.1, 0.15]
+    ERROR_ACCEL_DISTRIBUTION = [-0.12, 0.1] #[-0.1, 0.15]
 
     def __init__(self):
         
@@ -50,10 +50,10 @@ class EmulatedSensor(object):
         Positive angles are CCW for axis Z
         '''
         
-        state = self._drone.getState()
+        state = self._drone.getState()        
+        angles = self._noisify(state._angles, EmulatedSensor.ERROR_ANGLE_DISTRIBUTION)
         
-        return self._noisify(state._angles, EmulatedSensor.ERROR_ANGLE_DISTRIBUTION)
-        #return state._angles
+        return angles
 
     
     def readDeviceAngles(self):
@@ -63,9 +63,10 @@ class EmulatedSensor(object):
 
     def readAccels(self):
         
-        state = self._drone.getState()
+        state = self._drone.getState()        
+        accels = self._noisify(state._accels, EmulatedSensor.ERROR_ACCEL_DISTRIBUTION)
         
-        return self._noisify(state._accels, EmulatedSensor.ERROR_ACCEL_DISTRIBUTION)
+        return accels
 
     
     def resetGyroReadTime(self):

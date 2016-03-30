@@ -25,7 +25,8 @@ class Dispatcher(StreamRequestHandler):
         self._controller = FlightController.getInstance()
         self._controller.start()
         
-        #self._throttle = 0.0        
+        self._throttleByUser = False
+        self._throttle = 0.0        
         self._started = False
         
         
@@ -74,20 +75,29 @@ class Dispatcher(StreamRequestHandler):
             newTargets = message["data"]
             self._controller.setTargets(newTargets)
             
-#         elif self._started and message["key"] == "throttle":
-#             
-#             newThrottle = message["data"]
-# 
-#             if newThrottle > 0:
-#                 dThrottle = newThrottle - self._throttle
-#                 
-#                 if dThrottle != 0:
-#                     self._throttle = newThrottle
-#             
-#                     self._controller.addThrottle(dThrottle)
-#             else:
-#                 self._throttle = 0
-#                 self._controller.standBy()
+        elif self._started and message["key"] == "throttle":
+            
+            if not self._throttleByUser:
+                #Disable Z-accel stabilization
+                self._controller.alterPidAccelConstants(2, 0.0, 0.0, 0.0)
+                self._throttle = 0
+                self._controller.standBy()
+                
+                self._throttleByUser = True
+            
+             
+            newThrottle = message["data"]
+ 
+            if newThrottle > 0:
+                dThrottle = newThrottle - self._throttle
+                 
+                if dThrottle != 0:
+                    self._throttle = newThrottle
+             
+                    self._controller.addThrottle(dThrottle)
+            else:
+                self._throttle = 0
+                self._controller.standBy()
         
         elif message["key"] == "is-started":
             

@@ -51,10 +51,10 @@ class EmulatedDrone(object):
         
         if EmulatedDrone.REALISTIC_FLIGHT:
         
-            self._propellers = [Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.94, 1.01 * self._weight/4.0, Propeller.ROTATION_CW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
-                                Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.92, 0.93 * self._weight/4.0, Propeller.ROTATION_CCW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
-                                Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.89, 1.01 * self._weight/4.0, Propeller.ROTATION_CW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
-                                Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.95, 1.05 * self._weight/4.0, Propeller.ROTATION_CCW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE)]
+            self._propellers = [Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.94, 1.0 * self._weight/4.0, Propeller.ROTATION_CW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
+                                Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.91, 0.6 * self._weight/4.0, Propeller.ROTATION_CCW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
+                                Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.85, 1.0 * self._weight/4.0, Propeller.ROTATION_CW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
+                                Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.95, 1.4 * self._weight/4.0, Propeller.ROTATION_CCW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE)]
         else:
             
             self._propellers = [Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 1.0, self._weight/4.0, Propeller.ROTATION_CW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
@@ -143,8 +143,8 @@ class EmulatedDrone(object):
             for propeller in self._propellers:
                 propeller.setAngles(self._state._angles)
 
-            if dt < 1.0:
-                print self._state            
+            #if dt < 1.0:
+            #    print self._state            
         
         
     def getState(self):

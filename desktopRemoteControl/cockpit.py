@@ -23,6 +23,8 @@ class Cockpit(ttkFrame):
     Remote controller GUI 
     '''
     
+    THROTTLE_BY_USER = False
+    
     KEY_ANG_SPEED = "ang-speed"
     KEY_ANGLES = "angles"
     KEY_ACCEL = "accel"
@@ -200,11 +202,23 @@ class Cockpit(ttkFrame):
         controlFrame.grid(column=0, row=1, sticky="W")
         
         self._throttle = DoubleVar()
-        self._thrustScale = Scale(controlFrame, orient=VERTICAL, from_=100.0, to=-100.0, \
-                            tickinterval=0, variable=self._throttle, \
-                            length=200, showvalue=1, \
-                            state=DISABLED,
-                            command=self._onThrustScaleChanged)
+        
+        if Cockpit.THROTTLE_BY_USER:
+
+            self._thrustScale = Scale(controlFrame, orient=VERTICAL, from_=100.0, to=0.0, \
+                                tickinterval=0, variable=self._throttle, \
+                                length=200, showvalue=1, \
+                                state=DISABLED,
+                                command=self._onThrustScaleChanged)
+
+        else:
+        
+            self._thrustScale = Scale(controlFrame, orient=VERTICAL, from_=100.0, to=-100.0, \
+                                tickinterval=0, variable=self._throttle, \
+                                length=200, showvalue=1, \
+                                state=DISABLED,
+                                command=self._onThrustScaleChanged)
+
         self._thrustScale.bind("<Double-Button-1>", self._onThrustScaleDoubleButton1, "+")
         self._thrustScale.grid(column=0)
         
@@ -315,7 +329,10 @@ class Cockpit(ttkFrame):
         #Remote control uses clockwise angle, but the drone's referece system uses counter-clockwise angle
         self._target[2] = -self._yaw.get() * Cockpit.MAX_ANGLE_SPEED / 100.0
         
-        self._target[3] = self._throttle.get() * Cockpit.MAX_ACCEL_Z / 100.0
+        if Cockpit.THROTTLE_BY_USER:
+            self._target[3] = 0.0
+        else:        
+            self._target[3] = self._throttle.get() * Cockpit.MAX_ACCEL_Z / 100.0
         
         self._sendTarget() 
     
@@ -586,10 +603,22 @@ class Cockpit(ttkFrame):
 #     
 #         self._link.send({"key": "integrals", "data":self._integralsEnabled.get() != 0})
 #             
+    
      
     def _onThrustScaleChanged(self, eventArgs):
         
-        self._updateTarget()
+        if Cockpit.THROTTLE_BY_USER:
+            
+            self._sendThrottle()
+        
+        else:
+        
+            self._updateTarget()
+
+
+    def _sendThrottle(self):
+        
+        self._link.send({"key": "throttle", "data": self._throttle.get()})
     
 
     def _sendTarget(self):

@@ -32,6 +32,7 @@ class StateProvider(object):
         
         self._imu.refreshState()
         
+        '''
         currentTime = time.time()
         if self._state._time != None:
 
@@ -54,6 +55,8 @@ class StateProvider(object):
             self._state._angles = self._imu.readDeviceAngles()
 
         self._state._time = currentTime
+        '''
+        self._state._angles = self._imu.readDeviceAngles()
         
         return self._state
     
@@ -67,7 +70,7 @@ class StateProvider(object):
 def main():
 
     provider = StateProvider()
-    display = Display.getInstance().setStateProvider(provider)
+    display = Display.getInstance().setStateProvider(provider).setRefreshTime(0.02)
     display.start()
     provider.close()
 

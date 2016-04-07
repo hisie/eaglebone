@@ -21,10 +21,8 @@ class EmulatedDrone(object):
     Emulates a physical drone
     '''
     
-    #Realistic or ideal flight emulation mode
-    REALISTIC_FLIGHT = True
-    
     #TODO Create config
+    REALISTIC_FLIGHT = True #Realistic or ideal flight emulation mode
     PROPELLER_THRUST_RATE = 0.01 # 1.0kg @100%
     PROPELLER_COUNTER_ROTATION_RATE = 10.0    
     WEIGHT = 1.8 # kg
@@ -44,12 +42,14 @@ class EmulatedDrone(object):
 
     def __init__(self):
         
+        self._realisticFlight = EmulatedDrone.REALISTIC_FLIGHT 
+        
         self._state = State()
         self._weight = EmulatedDrone.WEIGHT        
         self._armLength = EmulatedDrone.ARM_LENGTH        
         self._arcSpeedToAngleSpeed = 180.0/PI*self._armLength
         
-        if EmulatedDrone.REALISTIC_FLIGHT:
+        if self._realisticFlight:
         
             self._propellers = [Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.94, 1.0 * self._weight/4.0, Propeller.ROTATION_CW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
                                 Propeller(self, EmulatedDrone.PROPELLER_THRUST_RATE, 0.91, 0.6 * self._weight/4.0, Propeller.ROTATION_CCW, EmulatedDrone.PROPELLER_COUNTER_ROTATION_RATE),
